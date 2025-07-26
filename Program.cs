@@ -15,6 +15,7 @@ using System.Text;
 using System.Xml;
 using VersOne.Epub;
 
-EpubLoader.Run("E:\\Coding\\Projects\\AIBookSummary\\input\\The_Way_of_Kings.epub");
+//EpubLoader.Run("E:\\Coding\\Projects\\AIBookSummary\\input\\The_Way_of_Kings.epub");
 
+OpenAIProcessing.Run("E:\\Coding\\Projects\\AIBookSummary\\input\\way_of_kings_prelude.json");
 

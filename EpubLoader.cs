@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
 using VersOne.Epub;
@@ -12,29 +14,36 @@ internal class EpubLoader
 {
     public static void Run(string filePath)
     {
-        var allChaptersAndText = new List<(int level, List<string> chapter)>();
+        var allChaptersAndText = new List<(int level, string chapterName, string chapter)>();
+        var author = string.Empty;
+        var title = string.Empty;
         using (EpubBookRef bookRef = EpubReader.OpenBook(filePath))
-            foreach (EpubNavigationItemRef navigationItemRef in bookRef.GetNavigation())
-                allChaptersAndText.AddRange(GetChapterAndText(navigationItemRef, 0));
-
-        foreach (var (level, chapterAndText) in allChaptersAndText)
         {
-            Console.WriteLine(new string('-', 50));
-            Console.WriteLine(new string(' ', level * 2) + chapterAndText[0]);
-            Console.WriteLine(new string('-', 50));
-            foreach (string line in chapterAndText.Skip(1))
-                Console.WriteLine(line);
+            author = bookRef.Author;
+            title = bookRef.Title;
+
+            foreach (EpubNavigationItemRef navigationItemRef in bookRef?.GetNavigation() ?? new List<EpubNavigationItemRef>())
+                allChaptersAndText.AddRange(GetChapterAndText(navigationItemRef, 0));
         }
+
+        var book = new Book
+        {
+            BookInfo = new BookInfo(title, author),
+            Chapters = allChaptersAndText
+                .Where(c => WordCount(c.chapter) > 50)
+                .Select(c => new ChapterInfo(c.chapterName, c.chapter))
+                .ToList()
+        };
+        var json = JsonSerializer.Serialize(book);
+        File.WriteAllText("chapters.json", json);
     }
 
-    private static List<(int level, List<string> chapter)> GetChapterAndText(EpubNavigationItemRef navigationItemRef, int level)
+    static List<(int level, string chapterName, string chapter)> GetChapterAndText(EpubNavigationItemRef navigationItemRef, int level)
     {
-        var chapters = new List<(int, List<string>)>();
+        var chapters = new List<(int, string, string)>();
 
-        var navAndText = new List<string> { navigationItemRef.Title };
         var htmlContent = navigationItemRef.HtmlContentFileRef?.ReadContent();
-        navAndText.Add(GetText(htmlContent ?? string.Empty));
-        chapters.Add((level, navAndText));
+        chapters.Add((level, navigationItemRef.Title, GetText(htmlContent ?? string.Empty)));
 
         foreach (EpubNavigationItemRef nestedNavigationItemRef in navigationItemRef.NestedItems)
             chapters.AddRange(GetChapterAndText(nestedNavigationItemRef, level + 1));
@@ -42,7 +51,7 @@ internal class EpubLoader
         return chapters;
     }
 
-    private static string GetText(string text)
+    static string GetText(string text)
     {
         HtmlDocument htmlDocument = new();
         htmlDocument.LoadHtml(text);
@@ -58,6 +67,43 @@ internal class EpubLoader
             var textContent = node.InnerText.Trim();
             sb.Append(inlineElements.Contains(parentName) ? textContent : textContent + Environment.NewLine);
         }
-        return sb.ToString();
+        return Regex.Replace(sb.ToString().Trim(), @"(\r\n){2,}", "\r\n");
     }
+
+    static int WordCount(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+            return 0;
+
+        return text.Split(new[] { ' ', '\r', '\n', '\t' }, StringSplitOptions.RemoveEmptyEntries).Length;
+    }
+
+}
+
+internal class ChapterInfo
+{
+    public string ChapterName { get; set; }
+    public string Chapter { get; set; }
+    public ChapterInfo(string chapterName, string chapter)
+    {
+        ChapterName = chapterName;
+        Chapter = chapter;
+    }
+}
+
+internal class BookInfo
+{
+    public string Title { get; set; }
+    public string Author { get; set; }
+    public BookInfo(string title, string author)
+    {
+        Title = title;
+        Author = author;
+    }
+}
+
+internal class Book
+{
+    public BookInfo BookInfo { get; set; }
+    public List<ChapterInfo> Chapters { get; set; }
 }
