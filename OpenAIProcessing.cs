@@ -7,90 +7,46 @@ using System.Text.Json;
 using System.Threading.Tasks;
 namespace AIBookSummary;
 
+
 internal class OpenAIProcessing
 {
-    public static void Run(string filePath)
+    public static void Run()
     {
-        ChatClient client = new(model: "gpt-4.1-nano", apiKey: Environment.GetEnvironmentVariable("OPENAI_API_KEY"));
-        List<ChatMessage> messages = [
-                new UserChatMessage("You are an expert book chapter summarizer. I will provide you with a chapter in a book, and you will analyze and provide a summary, key themes, universe specific vocabulary (best guess at meaning given context) characters, and locations. Here is the json version of the chapter including name of book and chapter contents: "
-                                    + System.IO.File.ReadAllText(filePath) ),
-        ];
+        var config = Config.Config.Load();
+        var instructions = JsonDocument.Parse(File.ReadAllText(config.InstructionsPath)).RootElement.GetProperty("instructions");
+        var instructionText = string.Join("\n", instructions.EnumerateArray()
+            .Select(e => e.GetProperty("instruction").GetString()));
 
+        Models.Book book = JsonSerializer.Deserialize<Models.Book>(File.ReadAllText(config.BookJsonPath)) ?? new Models.Book();
+
+        ChatClient client = new(model: "gpt-4.1-nano", apiKey: Environment.GetEnvironmentVariable("OPENAI_API_KEY"));
         ChatCompletionOptions options = new()
         {
             ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
                 jsonSchemaFormatName: "chapter_analysis",
-                jsonSchema: BinaryData.FromBytes("""
-                    {
-                      "type": "object",
-                      "additionalProperties": false,
-                      "properties": {
-                        "chapterName": {
-                          "type": "string"
-                        },
-                        "summary": {
-                          "type": "string"
-                        },
-                        "themes": {
-                          "type": "array",
-                          "items": {
-                            "type": "string"
-                          }
-                        },
-                        "worldVocab": {
-                          "type": "array",
-                          "items": {
-                            "type": "object",
-                            "additionalProperties": false,
-                            "properties": {
-                              "word": { "type": "string" },
-                              "best_guess_at_meaning": { "type": "string" }
-                            },
-                            "required": ["word", "best_guess_at_meaning"]
-                          }
-                        },
-                        "characters": {
-                          "type": "array",
-                          "items": {
-                            "type": "object",
-                            "additionalProperties": false,
-                            "properties": {
-                              "name": { "type": "string" },
-                              "description": { "type": "string" }
-                            },
-                            "required": ["name", "description"]
-                          }
-                        },
-                        "locations": {
-                          "type": "array",
-                          "items": {
-                            "type": "object",
-                            "additionalProperties": false,
-                            "properties": {
-                              "name": { "type": "string" },
-                              "description": { "type": "string" }
-                            },
-                            "required": ["name", "description"]
-                          }
-                        }
-                      },
-                      "required": ["chapterName", "summary", "themes", "worldVocab", "characters", "locations"]
-                    }
-                    """u8.ToArray()),
+                jsonSchema: BinaryData.FromBytes(File.ReadAllBytes(config.SchemaPath)),
                 jsonSchemaIsStrict: true)
         };
 
-        ChatCompletion completion = client.CompleteChat(messages, options);
-        using JsonDocument structuredJson = JsonDocument.Parse(completion.Content[0].Text);
-
-        Console.WriteLine($"Chapter Name: {structuredJson.RootElement.GetProperty("chapterName")}");
-
-        foreach (JsonElement stepElement in structuredJson.RootElement.GetProperty("characters").EnumerateArray())
+        var analysisHistory = new List<Models.ChapterAnalysis>();
+        foreach (Models.ChapterInfo chapter in book.Chapters)
         {
-            Console.WriteLine($"  - name: {stepElement.GetProperty("name")}");
-            Console.WriteLine($"    Description: {stepElement.GetProperty("description")}");
+            var lastAnalysis = analysisHistory.LastOrDefault();
+            var JsonAnalysisHistory = lastAnalysis != null ? JsonSerializer.Serialize(lastAnalysis) : string.Empty;
+            List<ChatMessage> messages = [
+                    new SystemChatMessage(
+                        [
+                            ChatMessageContentPart.CreateTextPart(instructionText),
+                            ChatMessageContentPart.CreateTextPart("The book you are summarizing is " + book.BookInfo.Title + " By: " + book.BookInfo.Author),
+                            ChatMessageContentPart.CreateTextPart("Chapter Name: " + chapter.Name),
+                            ChatMessageContentPart.CreateTextPart("Chapter Contents: " + chapter.Contents),
+                    ])
+            ];
+
+            ChatCompletion completion = client.CompleteChat(messages, options);
+            Models.ChapterAnalysis analysis = JsonSerializer.Deserialize<Models.ChapterAnalysis>(completion.Content[0].Text);
+            analysisHistory.Add(analysis);
+            Console.WriteLine("Summary for chapter: " + analysis.Summary);
         }
     }
-
 }

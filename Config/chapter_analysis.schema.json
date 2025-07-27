@@ -1,0 +1,70 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "chapterName": { "type": "string" },
+    "chapterIndex": { "type": "integer" },
+    "summary": { "type": "string" },
+    "themes": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "worldVocab": {
+      "type": [ "array", "null" ],
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "word": { "type": "string" },
+          "best_guess_at_meaning": { "type": "string" }
+        },
+        "required": [ "word", "best_guess_at_meaning" ]
+      }
+    },
+    "characters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "chaptersIntroduced": {
+            "type": "array",
+            "items": { "type": "integer" }
+          },
+          "progression": {
+            "type": [ "array", "null" ],
+            "items": {
+              "type": [ "object", "null" ],
+              "additionalProperties": false,
+              "properties": {
+                "chapter": { "type": "integer" },
+                "change": { "type": "string" }
+              },
+              "required": [ "chapter", "change" ]
+            }
+          }
+        },
+        "required": [ "name", "description", "chaptersIntroduced", "progression" ]
+      }
+    },
+    "namedLocations": {
+      "type": [ "array", "null" ],
+      "items": {
+        "type": [ "object", "null" ],
+        "additionalProperties": false,
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "chaptersIntroduced": {
+            "type": "array",
+            "items": { "type": "integer" }
+          }
+        },
+        "required": [ "name", "description", "chaptersIntroduced" ]
+      }
+    }
+  },
+  "required": [ "chapterName", "chapterIndex", "summary", "themes", "worldVocab", "characters", "namedLocations" ]
+}

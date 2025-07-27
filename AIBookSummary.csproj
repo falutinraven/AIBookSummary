@@ -13,4 +13,8 @@
     <PackageReference Include="VersOne.Epub" Version="3.3.4" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="output\" />
+  </ItemGroup>
+
 </Project>

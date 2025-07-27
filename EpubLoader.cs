@@ -1,4 +1,5 @@
-﻿using HtmlAgilityPack;
+﻿using AIBookSummary.Models;
+using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,12 +13,13 @@ namespace AIBookSummary;
 
 internal class EpubLoader
 {
-    public static void Run(string filePath)
+    public static void Run()
     {
+        var config = Config.Config.Load();
         var allChaptersAndText = new List<(int level, string chapterName, string chapter)>();
         var author = string.Empty;
         var title = string.Empty;
-        using (EpubBookRef bookRef = EpubReader.OpenBook(filePath))
+        using (EpubBookRef bookRef = EpubReader.OpenBook(config.EpubPath))
         {
             author = bookRef.Author;
             title = bookRef.Title;
@@ -35,7 +37,7 @@ internal class EpubLoader
                 .ToList()
         };
         var json = JsonSerializer.Serialize(book);
-        File.WriteAllText("chapters.json", json);
+        File.WriteAllText(config.OutputPath + title + ".json", json);
     }
 
     static List<(int level, string chapterName, string chapter)> GetChapterAndText(EpubNavigationItemRef navigationItemRef, int level)
@@ -80,30 +82,4 @@ internal class EpubLoader
 
 }
 
-internal class ChapterInfo
-{
-    public string ChapterName { get; set; }
-    public string Chapter { get; set; }
-    public ChapterInfo(string chapterName, string chapter)
-    {
-        ChapterName = chapterName;
-        Chapter = chapter;
-    }
-}
 
-internal class BookInfo
-{
-    public string Title { get; set; }
-    public string Author { get; set; }
-    public BookInfo(string title, string author)
-    {
-        Title = title;
-        Author = author;
-    }
-}
-
-internal class Book
-{
-    public BookInfo BookInfo { get; set; }
-    public List<ChapterInfo> Chapters { get; set; }
-}

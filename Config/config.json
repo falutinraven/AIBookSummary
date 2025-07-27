@@ -1,0 +1,12 @@
+{
+  "InputPath": "E:\\Coding\\Projects\\AIBookSummary\\input\\",
+  "ConfigPath": "E:\\Coding\\Projects\\AIBookSummary\\Config\\",
+  "OutputPath": "E:\\Coding\\Projects\\AIBookSummary\\output\\",
+
+
+  "SchemaPath": "chapter_analysis.schema.json",
+  "EpubPath": "The_Giver_Quartet.epub",
+  "InstructionsPath": "open_ai_instructions.json",
+  "SingleChapterPath": "way_of_kings_prelude.json",
+  "BookJsonPath": "The Giver Quartet Omnibus.json"
+}
