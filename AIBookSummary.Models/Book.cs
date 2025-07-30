@@ -6,13 +6,13 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace AIBookSummary.Models;
-internal class Book
+public class Book
 {
     public BookInfo BookInfo { get; set; }
     public List<ChapterInfo> Chapters { get; set; }
 }
 
-internal class ChapterInfo
+public class ChapterInfo
 {
     public string Name { get; set; } = string.Empty;
     public string Contents { get; set; } = string.Empty;
@@ -24,7 +24,7 @@ internal class ChapterInfo
     }
 }
 
-internal class BookInfo
+public class BookInfo
 {
     public string Title { get; set; } = string.Empty;
     public string Author { get; set; } = string.Empty;

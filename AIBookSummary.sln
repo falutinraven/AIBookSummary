@@ -5,6 +5,10 @@ VisualStudioVersion = 17.14.36310.24
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AIBookSummary", "AIBookSummary\AIBookSummary.csproj", "{AA3EB0E2-AA60-58EF-B162-61D43A1CB69F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AIBookSummary.Models", "AIBookSummary.Models\AIBookSummary.Models.csproj", "{5B919518-73AA-4FFF-8913-C439812994E7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AIBookSummaryAPI", "AIBookSummaryAPI\AIBookSummaryAPI.csproj", "{CA87D90B-D728-4EC5-9A61-A8A59B1144C6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{AA3EB0E2-AA60-58EF-B162-61D43A1CB69F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AA3EB0E2-AA60-58EF-B162-61D43A1CB69F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AA3EB0E2-AA60-58EF-B162-61D43A1CB69F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B919518-73AA-4FFF-8913-C439812994E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B919518-73AA-4FFF-8913-C439812994E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B919518-73AA-4FFF-8913-C439812994E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B919518-73AA-4FFF-8913-C439812994E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA87D90B-D728-4EC5-9A61-A8A59B1144C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA87D90B-D728-4EC5-9A61-A8A59B1144C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA87D90B-D728-4EC5-9A61-A8A59B1144C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA87D90B-D728-4EC5-9A61-A8A59B1144C6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
