@@ -44,7 +44,10 @@ internal class OpenAIProcessing
             ];
 
             ChatCompletion completion = client.CompleteChat(messages, options);
-            Models.ChapterAnalysis analysis = JsonSerializer.Deserialize<Models.ChapterAnalysis>(completion.Content[0].Text);
+            var analysisJson = completion.Content.Count > 0 ? completion.Content[0].Text : null;
+            if (string.IsNullOrWhiteSpace(analysisJson))
+                throw new InvalidOperationException("Chat completion did not return any content to deserialize.");
+            Models.ChapterAnalysis analysis = JsonSerializer.Deserialize<Models.ChapterAnalysis>(analysisJson) ?? throw new InvalidOperationException("Deserialized ChapterAnalysis is null.");
             analysisHistory.Add(analysis);
             Console.WriteLine("Summary for chapter: " + analysis.Summary);
         }

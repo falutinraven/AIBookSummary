@@ -36,8 +36,8 @@ internal class EpubLoader
                 .Select(c => new ChapterInfo(c.chapterName, c.chapter))
                 .ToList()
         };
-        var json = JsonSerializer.Serialize(book);
-        File.WriteAllText(config.OutputPath + title + ".json", json);
+        var jsonOutput = JsonSerializer.Serialize(book);
+        File.WriteAllText(Path.Join(config.ProjectPath, "Output", $"{title}.json"), jsonOutput);
     }
 
     static List<(int level, string chapterName, string chapter)> GetChapterAndText(EpubNavigationItemRef navigationItemRef, int level)
