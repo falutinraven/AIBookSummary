@@ -1,7 +1,7 @@
 {
-  "InputPath": "E:\\Coding\\Projects\\AIBookSummary\\input\\",
-  "ConfigPath": "E:\\Coding\\Projects\\AIBookSummary\\Config\\",
-  "OutputPath": "E:\\Coding\\Projects\\AIBookSummary\\output\\",
+  "InputPath": "D:\\projects\\BookSummary\\input\\",
+  "ConfigPath": "D:\\projects\\BookSummary\\Config\\",
+  "OutputPath": "D:\\projects\\BookSummary\\output\\",
 
 
   "SchemaPath": "chapter_analysis.schema.json",
