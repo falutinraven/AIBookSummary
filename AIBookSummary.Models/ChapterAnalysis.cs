@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 namespace AIBookSummary.Models;
 public class ChapterAnalysis
 {
+    [JsonIgnore]
+    public long Id { get; set; }
+
     [JsonPropertyName("chapterName")]
     public string ChapterName { get; set; } = string.Empty;
 
@@ -32,6 +35,9 @@ public class ChapterAnalysis
 
 public class WorldVocabItem
 {
+    [JsonIgnore]
+    public long Id { get; set; }
+
     [JsonPropertyName("word")]
     public string Word { get; set; } = string.Empty;
 
@@ -41,6 +47,9 @@ public class WorldVocabItem
 
 public class CharacterInfo
 {
+    [JsonIgnore]
+    public long Id { get; set; }
+
     [JsonPropertyName("name")]
     public string Name { get; set; } = string.Empty;
 
@@ -56,6 +65,9 @@ public class CharacterInfo
 
 public class CharacterProgression
 {
+    [JsonIgnore]
+    public long Id { get; set; }
+
     [JsonPropertyName("chapter")]
     public int Chapter { get; set; }
 
@@ -65,6 +77,9 @@ public class CharacterProgression
 
 public class NamedLocation
 {
+    [JsonIgnore]
+    public long Id { get; set; }
+
     [JsonPropertyName("name")]
     public string Name { get; set; } = string.Empty;
 

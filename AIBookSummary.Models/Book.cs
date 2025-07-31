@@ -8,12 +8,15 @@ using System.Threading.Tasks;
 namespace AIBookSummary.Models;
 public class Book
 {
-    public BookInfo BookInfo { get; set; }
-    public List<ChapterInfo> Chapters { get; set; }
+    public long Id { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string Author { get; set; } = string.Empty;
+    public required List<ChapterInfo> Chapters { get; set; } = new List<ChapterInfo>();
 }
 
 public class ChapterInfo
 {
+    public long Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public string Contents { get; set; } = string.Empty;
     [JsonConstructor]
@@ -24,14 +27,3 @@ public class ChapterInfo
     }
 }
 
-public class BookInfo
-{
-    public string Title { get; set; } = string.Empty;
-    public string Author { get; set; } = string.Empty;
-    [JsonConstructor]
-    public BookInfo(string Title, string Author)
-    {
-        this.Title = Title;
-        this.Author = Author;
-    }
-}

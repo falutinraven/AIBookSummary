@@ -30,7 +30,8 @@ internal class EpubLoader
 
         var book = new Book
         {
-            BookInfo = new BookInfo(title, author),
+            Title = title,
+            Author = author,
             Chapters = allChaptersAndText
                 .Where(c => WordCount(c.chapter) > 50)
                 .Select(c => new ChapterInfo(c.chapterName, c.chapter))

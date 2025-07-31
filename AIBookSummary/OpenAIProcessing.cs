@@ -17,7 +17,8 @@ internal class OpenAIProcessing
         var instructionText = string.Join("\n", instructions.EnumerateArray()
             .Select(e => e.GetProperty("instruction").GetString()));
 
-        Models.Book book = JsonSerializer.Deserialize<Models.Book>(File.ReadAllText(config.BookJsonPath)) ?? new Models.Book();
+        Models.Book book = JsonSerializer.Deserialize<Models.Book>(File.ReadAllText(config.BookJsonPath))
+            ?? new Models.Book { Chapters = new List<Models.ChapterInfo>() };
 
         ChatClient client = new(model: "gpt-4.1-nano", apiKey: Environment.GetEnvironmentVariable("OPENAI_API_KEY"));
         ChatCompletionOptions options = new()
@@ -37,7 +38,7 @@ internal class OpenAIProcessing
                     new SystemChatMessage(
                         [
                             ChatMessageContentPart.CreateTextPart(instructionText),
-                            ChatMessageContentPart.CreateTextPart("The book you are summarizing is " + book.BookInfo.Title + " By: " + book.BookInfo.Author),
+                            ChatMessageContentPart.CreateTextPart("The book you are summarizing is " + book.Title + " By: " + book.Author),
                             ChatMessageContentPart.CreateTextPart("Chapter Name: " + chapter.Name),
                             ChatMessageContentPart.CreateTextPart("Chapter Contents: " + chapter.Contents),
                     ])

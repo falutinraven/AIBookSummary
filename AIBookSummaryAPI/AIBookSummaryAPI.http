@@ -4,3 +4,44 @@ GET {{AIBookSummaryAPI_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
+
+POST {{AIBookSummaryAPI_HostAddress}}/api/books
+Content-Type: application/json
+
+{
+  "Title": "Sample Book Title",
+  "Author": "Sample Author",
+  "Chapters": [
+    {
+      "Name": "Chapter 1",
+      "Contents": "This is the content of chapter 1."
+    },
+    {
+      "Name": "Chapter 2",
+      "Contents": "This is the content of chapter 2."
+    }
+  ]
+}
+
+###
+
+GET {{AIBookSummaryAPI_HostAddress}}/api/books
+
+###
+
+@id=1
+DELETE {{AIBookSummaryAPI_HostAddress}}/api/books/{{id}}
+
+###
+
+GET {{AIBookSummaryAPI_HostAddress}}/api/books/1
+###
+
+PUT {{AIBookSummaryAPI_HostAddress}}/api/books/{{id}}
+Content-Type: application/json
+
+{
+  //Book
+}
+
+###
