@@ -19,6 +19,7 @@ public class ChapterInfo
     public long Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public string Contents { get; set; } = string.Empty;
+    public ChapterAnalysis? Analysis { get; set; }
     [JsonConstructor]
     public ChapterInfo(string Name, string Contents)
     {
