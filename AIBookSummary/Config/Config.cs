@@ -29,9 +29,9 @@ internal class Config
         if (config == null)
             throw new InvalidOperationException("Config file is missing required properties or is invalid.");
 
-        var inputPath = Path.Combine(config.ProjectPath, "Input");
-        var outputPath = Path.Combine(config.ProjectPath, "Output");
-        var configPath = Path.Combine(config.ProjectPath, "Config");
+        var inputPath = Path.Combine(projectDirectory, "Input");
+        var outputPath = Path.Combine(projectDirectory, "Output");
+        var configPath = Path.Combine(projectDirectory, "Config");
 
         config.BookJsonPath = Path.Combine(outputPath, config.BookJsonPath);
         config.EpubPath = Path.Combine(inputPath, config.EpubPath);

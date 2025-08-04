@@ -10,15 +10,14 @@ namespace AIBookSummary;
 
 internal class OpenAIProcessing
 {
-    public static void Run()
+    public static Models.Book Run()
     {
         var config = Config.Config.Load();
         var instructions = JsonDocument.Parse(File.ReadAllText(config.InstructionsPath)).RootElement.GetProperty("instructions");
         var instructionText = string.Join("\n", instructions.EnumerateArray()
             .Select(e => e.GetProperty("instruction").GetString()));
 
-        Models.Book book = JsonSerializer.Deserialize<Models.Book>(File.ReadAllText(config.BookJsonPath))
-            ?? new Models.Book { Chapters = new List<Models.ChapterInfo>() };
+        Models.Book book = JsonSerializer.Deserialize<Models.Book>(File.ReadAllText(config.BookJsonPath)) ?? new Models.Book { Chapters = new List<Models.ChapterInfo>() };
 
         ChatClient client = new(model: "gpt-4.1-nano", apiKey: Environment.GetEnvironmentVariable("OPENAI_API_KEY"));
         ChatCompletionOptions options = new()
@@ -29,16 +28,16 @@ internal class OpenAIProcessing
                 jsonSchemaIsStrict: true)
         };
 
-        var analysisHistory = new List<Models.ChapterAnalysis>();
+        Models.ChapterAnalysis? prevAnalysis = null;
         foreach (Models.ChapterInfo chapter in book.Chapters)
         {
-            var lastAnalysis = analysisHistory.LastOrDefault();
-            var JsonAnalysisHistory = lastAnalysis != null ? JsonSerializer.Serialize(lastAnalysis) : string.Empty;
+            var jsonAnalysisHistory = prevAnalysis != null ? JsonSerializer.Serialize(prevAnalysis) : string.Empty;
             List<ChatMessage> messages = [
                     new SystemChatMessage(
                         [
                             ChatMessageContentPart.CreateTextPart(instructionText),
                             ChatMessageContentPart.CreateTextPart("The book you are summarizing is " + book.Title + " By: " + book.Author),
+                            ChatMessageContentPart.CreateTextPart("Previous Analysis: " + jsonAnalysisHistory),
                             ChatMessageContentPart.CreateTextPart("Chapter Name: " + chapter.Name),
                             ChatMessageContentPart.CreateTextPart("Chapter Contents: " + chapter.Contents),
                     ])
@@ -48,9 +47,9 @@ internal class OpenAIProcessing
             var analysisJson = completion.Content.Count > 0 ? completion.Content[0].Text : null;
             if (string.IsNullOrWhiteSpace(analysisJson))
                 throw new InvalidOperationException("Chat completion did not return any content to deserialize.");
-            Models.ChapterAnalysis analysis = JsonSerializer.Deserialize<Models.ChapterAnalysis>(analysisJson) ?? throw new InvalidOperationException("Deserialized ChapterAnalysis is null.");
-            analysisHistory.Add(analysis);
-            Console.WriteLine("Summary for chapter: " + analysis.Summary);
+            prevAnalysis = JsonSerializer.Deserialize<Models.ChapterAnalysis>(analysisJson) ?? throw new InvalidOperationException("Deserialized ChapterAnalysis is null.");
+            chapter.Analysis = prevAnalysis;
         }
+        return book;
     }
 }

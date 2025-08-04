@@ -10,7 +10,7 @@
       "instruction": "Do NOT use information from outside the provided chapter and any accompanying history JSON. Avoid spoilers at all costs."
     },
     {
-      "instruction": "If history JSON is provided (i.e., from previous chapters), preserve existing information such as character names, descriptions, and previously listed chaptersIntroduced."
+      "instruction": "If analysis JSON is provided (i.e., from previous chapters), preserve existing information such as character names, descriptions, and previously listed chaptersIntroduced. but modify as you see fit to match with any new info provided"
     },
     {
       "instruction": "When adding a character or location already seen, update their 'chaptersIntroduced' field to include the current chapter number — do not duplicate existing entries."
