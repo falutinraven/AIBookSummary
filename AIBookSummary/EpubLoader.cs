@@ -77,7 +77,6 @@ internal class EpubLoader
     {
         if (string.IsNullOrWhiteSpace(text))
             return 0;
-
         return text.Split(new[] { ' ', '\r', '\n', '\t' }, StringSplitOptions.RemoveEmptyEntries).Length;
     }
 

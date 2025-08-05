@@ -10,7 +10,7 @@ namespace AIBookSummary;
 
 internal class OpenAIProcessing
 {
-    public static Models.Book Run()
+    public static async Task<Models.Book> GenerateChapterSummaries()
     {
         var config = Config.Config.Load();
         var instructions = JsonDocument.Parse(File.ReadAllText(config.InstructionsPath)).RootElement.GetProperty("instructions");
@@ -36,20 +36,22 @@ internal class OpenAIProcessing
                     new SystemChatMessage(
                         [
                             ChatMessageContentPart.CreateTextPart(instructionText),
-                            ChatMessageContentPart.CreateTextPart("The book you are summarizing is " + book.Title + " By: " + book.Author),
-                            ChatMessageContentPart.CreateTextPart("Previous Analysis: " + jsonAnalysisHistory),
-                            ChatMessageContentPart.CreateTextPart("Chapter Name: " + chapter.Name),
-                            ChatMessageContentPart.CreateTextPart("Chapter Contents: " + chapter.Contents),
+                            ChatMessageContentPart.CreateTextPart($"The book you are summarizing is {book.Title} By: {book.Author}"),
+                            ChatMessageContentPart.CreateTextPart($"Previous Analysis:  {jsonAnalysisHistory}"),
+                            ChatMessageContentPart.CreateTextPart($"Chapter Name:  {chapter.Name}"),
+                            ChatMessageContentPart.CreateTextPart($"Chapter Contents: {chapter.Contents}"),
                     ])
             ];
 
-            ChatCompletion completion = client.CompleteChat(messages, options);
+            ChatCompletion completion = await client.CompleteChatAsync(messages, options);
             var analysisJson = completion.Content.Count > 0 ? completion.Content[0].Text : null;
             if (string.IsNullOrWhiteSpace(analysisJson))
                 throw new InvalidOperationException("Chat completion did not return any content to deserialize.");
             prevAnalysis = JsonSerializer.Deserialize<Models.ChapterAnalysis>(analysisJson) ?? throw new InvalidOperationException("Deserialized ChapterAnalysis is null.");
             chapter.Analysis = prevAnalysis;
+            Console.WriteLine($"Chapter: {chapter.Name} - Analysis: {prevAnalysis.Summary}");
         }
+        File.WriteAllText(Path.Combine(config.ProjectPath, "Output", $"{book.Title.Replace(" ", "_")}_contents_and_analysis.json"), JsonSerializer.Serialize(book, new JsonSerializerOptions { WriteIndented = true }));
         return book;
     }
 }

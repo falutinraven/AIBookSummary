@@ -1,8 +1,6 @@
 {
-  "BookInfo": {
-    "Title": "The Giver Quartet Omnibus",
-    "Author": "Lois Lowry"
-  },
+  "Title": "The Giver Quartet Omnibus",
+  "Author": "Lois Lowry",
   "Chapters": [
     {
       "Name": "One",

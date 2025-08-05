@@ -17,6 +17,6 @@ using VersOne.Epub;
 
 //EpubLoader.Run("E:\\Coding\\Projects\\AIBookSummary\\input\\The_Way_of_Kings.epub");
 
-var book = OpenAIProcessing.Run();
+var book = await OpenAIProcessing.GenerateChapterSummaries();
 Console.WriteLine($"Book Title: {book.Title}");
 
