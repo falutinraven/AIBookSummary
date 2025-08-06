@@ -14,10 +14,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="Output\" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<ProjectReference Include="..\AIBookSummary.Models\AIBookSummary.Models.csproj" />
 	</ItemGroup>
 
